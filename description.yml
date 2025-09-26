@@ -22,7 +22,9 @@ repos:
 # Configuration de la build
 build_system: oe
 
-target: core-image-base
+target:
+  - u-boot
+  - core-image-base
 
 machine: genericarm64
 
@@ -34,9 +36,18 @@ local_conf_header:
     PACKAGE_CLASSES ?= "package_rpm"
     EXTRA_IMAGE_FEATURES ?= "debug-tweaks ssh-server-openssh"
     IMAGE_INSTALL:append = " htop vim"
+
+
     # Activer le support de GPU pour RPi
     RPI_USE_U_BOOT = "1"
+
+    # Ajout du bootloader
+    IMAGE_INSTALL:remove = "grub"
+    UBOOT_MACHINE = "qemu_arm64_defconfig"
+    IMAGE_BOOT_FILES = "u-boot.bin"
+    IMAGE_CLASSES = ""
+    PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
+    
     # Limiter la mémoire utilisée via parallélisme
     BB_NUMBER_THREADS = "10"
     PARALLEL_MAKE = "-j 10"
-
