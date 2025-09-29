@@ -25,6 +25,10 @@ repos:
     layers:
       meta-mender-core:
 
+  meta-local:
+    path: "meta-my-layer"
+    layers:
+      meta-local:
 # Configuration de la build
 build_system: oe
 
@@ -32,7 +36,7 @@ target:
   - u-boot
   - core-image-minimal
 
-machine: genericarm64
+machine: qemuarm64
 
 distro: poky
 
@@ -40,39 +44,48 @@ distro: poky
 local_conf_header:
   my-config: |
 
-    INHERIT += "mender-full-ubi"
-    MENDER_MTDIDS = "nand0=spi0.0"
+    INHERIT += "mender-full"
+    # MENDER_MTDIDS = "dummy=none"
 
-    PACKAGE_CLASSES ?= "package_rpm"
+
+    # PACKAGE_CLASSES ?= "package_rpm"
     EXTRA_IMAGE_FEATURES ?= "debug-tweaks ssh-server-openssh"
 
-    IMAGE_INSTALL:append = " htop vim mender"
+    # IMAGE_INSTALL:append = " htop vim"
+    # # IMAGE_INSTALL:append = " mender"
+    # # IMAGE_INSTALL:append = " mender-auth mender-update"
 
-    # BBMASK += "recipes-mender/mender-client/mender-client_3.5.*.bb"
-    # BBMASK += "recipes-mender/mender-client/mender-client_git.bb"
+    # # BBMASK += "recipes-mender/mender-client/mender-client_3.5.*.bb"
+    # # BBMASK += "recipes-mender/mender-client/mender-client_git.bb"
 
-    PREFERRED_VERSION_mender = "5.0.2"
-    PREFERRED_PROVIDER_mender = "mender"
+    # # PREFERRED_VERSION_mender = "5.0.2"
+    # # PREFERRED_PROVIDER_mender = "mender"
 
-    KERNEL_DEVICETREE = "generic-arm64-qemu.dtb"
+    # # DEBUG_PREFIX_MAP:remove = "-fcanon-prefix-map"
+
+    # KERNEL_DEVICETREE = "qemu.dtb"
 
     INIT_MANAGER = "systemd"
 
-    # Ajout du bootloader
-    IMAGE_INSTALL:remove = "grub"
-    UBOOT_MACHINE = "qemu_arm64_defconfig"
-    IMAGE_BOOT_FILES = "u-boot.bin"
-    IMAGE_CLASSES = ""
-    PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
+    # WKS_FILE = "core-image-minimal.wks"
+    # IMAGE_FSTYPES += "wic"
+
+    # # Ajout du bootloader
+    # IMAGE_INSTALL:remove = "grub"
+    # UBOOT_MACHINE = "qemu_arm64_defconfig"
+    # IMAGE_BOOT_FILES = "u-boot.bin"
+    # IMAGE_CLASSES = ""
+    # PREFERRED_PROVIDER_virtual/bootloader = "u-boot"
     # PREFERRED_PROVIDER_virtual/kernel = "linux-yocto"
 
     # Configuration Mender (exemple générique ARM64)
     MENDER_ARTIFACT_NAME = "release-1"
     MENDER_SERVER_URL = "https://eu.hosted.mender.io"
     MENDER_TENANT_TOKEN = "AVi5j0YkJYNeYRamqwzY2r9WRz3sJo5nbGDGaE0uXtQ"
-    MENDER_DEVICE_TYPE = "genericarm64"
+    MENDER_DEVICE_TYPE = "qemuarm64"
 
     # Configuration du partitionnement Mender conseillé
+    MENDER_STORAGE_DEVICE = "/dev/vda"
     # Taille totale du support (en MiB)
     MENDER_STORAGE_TOTAL_SIZE_MB = "4096"        
     # Taille de la partition Bootloader
@@ -81,16 +94,14 @@ local_conf_header:
     MENDER_DATA_PART_SIZE_MB = "128"   
     # Active l'automatisation U-Boot pour le partitionnement
     MENDER_UBOOT_AUTO_CONFIGURE = "1"           
-
-    HOSTCC = "gcc"
-
     
     IMAGE_INSTALL:append = " ca-certificates"
     
 
-    # Pour l'emulateur
-    # Set à la bonne heure (évite les problèmes avec CA-certificates)
-    IMAGE_INSTALL:append = " rtc-tools"
+    # # Pour l'emulateur
+    # # Set à la bonne heure (évite les problèmes avec CA-certificates)
+    # IMAGE_INSTALL:append = " rtc-tools"
+
 
     # Limiter la mémoire utilisée via parallélisme
     BB_NUMBER_THREADS = "10"
