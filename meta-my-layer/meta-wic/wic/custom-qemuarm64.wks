@@ -1,14 +1,22 @@
 # core-image-minimal-qemuarm64.wks
-# Partition table Mender pour QEMU ARM64
+# Partition table GPT pour QEMU ARM64 avec A/B kernel et rootfs
+
+bootloader --ptable gpt --append="rootwait rootfstype=ext4"
 
 # Partition Boot (U-Boot)
-part /boot --source bootimg-partition --ondisk vda --fstype=vfat --label boot --active --size 16
+part /boot --source bootimg-partition --ondisk vda --fstype=vfat --label boot --active --size 128
 
-# Rootfs A (active)
-part / --source rootfs --ondisk vda --fstype=ext4 --label rootfs1 --size 1945
+# Rootfs A
+part / --source rootfs --fstype=ext4 --label rootA --align 1024 --size 2048
 
-# Rootfs B (inactive)
-part / --source rootfs --ondisk vda --fstype=ext4 --label rootfs2 --size 1945
+# Rootfs B
+part / --source rootfs --fstype=ext4 --label rootB --align 1024 --size 2048
 
-# Data partition pour Mender
-part /data --ondisk vda --fstype=ext4 --label data --size 128
+# Kernel A
+part /bootA --source bootimg-partition --fstype=vfat --label kernelA --align 1024 --size 128
+
+# Kernel B
+part /bootB --source bootimg-partition --fstype=vfat --label kernelB --align 1024 --size 128
+
+# Data persistante
+part /data --fstype=ext4 --label data --align 1024 --size 256

@@ -28,6 +28,15 @@ repos:
     layers:
       meta-mender-core:
 
+  # meta-bitbake-variable-substitution:
+  #   url: "https://github.com/coreycothrum/meta-bitbake-variable-substitution.git"
+  #   refspec: "master"
+
+  # meta-mender-kernel:
+  #   url: "https://github.com/coreycothrum/meta-mender-kernel.git"
+  #   refspec: "scarthgap"
+
+
   meta-custom:
     url: "https://github.com/stanleyselvaratnam/meta-custom.git"
     refspec: "main"
@@ -35,14 +44,14 @@ repos:
       meta-hellocustom:
       meta-key:
 
-  my-layer:
+  meta-my-layer:
     path: "meta-my-layer"
     layers:
       meta-local:
       meta-myapps:
+      meta-wic:
       # meta-rollback:
       # meta-kernel-custom:
-      # meta-wic:
   
 # Configuration de la build
 build_system: oe
@@ -60,7 +69,6 @@ local_conf_header:
   my-config: |
 
     # TODO : test the rollback
-
     # * ================================================================
     # * Local configuration for building core-image-minimal with Mender
     # * ================================================================
@@ -92,8 +100,7 @@ local_conf_header:
 
     # Init system to use
     INIT_MANAGER = "systemd"
-
-
+    
     # # Kernel et DTB
     # KERNEL_DEVICETREE = "qemu.dtb"
 
@@ -111,6 +118,11 @@ local_conf_header:
 
     # Build SD card image
     IMAGE_FSTYPES += "sdimg"
+
+
+    # ! WIC image configuration
+    WKS_FILE = "custom-qemuarm64.wks"
+    IMAGE_FSTYPES += "wic wic.bz2"
 
     # * ================================================================
     # * Mender configuration
@@ -132,18 +144,17 @@ local_conf_header:
     MENDER_BOOT_PART_SIZE_MB = "16"
     MENDER_DATA_PART_SIZE_MB = "128"
 
-    # Enable automatic U-Boot configuration for partitions
-    MENDER_UBOOT_AUTO_CONFIGURE = "1"
+    # ! Enable automatic U-Boot configuration for partitions
+    MENDER_UBOOT_AUTO_CONFIGURE = "0"
 
     # Polling intervals (empty = default)
     MENDER_UPDATE_POLL_INTERVAL_SECONDS = ""
     MENDER_INVENTORY_POLL_INTERVAL_SECONDS = ""
     MENDER_RETRY_POLL_INTERVAL_SECONDS = ""
-    # IMAGE_INSTALL:append = " mender-client"
 
     # --- MENDER SIGNING / VERIFY CONFIGURATION ---
 
-    # Clé publique déjà installée par mender-keys.bb
+    # Clé publique installée par mender-keys.bb
     IMAGE_INSTALL:append = " mender-keys"
 
     # Clé privée utilisée pour signer les artifacts (chemin absolu)
@@ -153,8 +164,7 @@ local_conf_header:
     # MENDER_ARTIFACT_VERIFY_KEY  = "${TOPDIR}/../mender-keys/public.key"
 
 
-    IMAGE_INSTALL:append = " mender-artifact-info "
-
+    IMAGE_INSTALL:append = " mender-artifact-info"
     # ! ================================================================
     # ! Test Rollback
     # ! ================================================================
@@ -180,7 +190,6 @@ local_conf_header:
     # BBMASK examples (to exclude certain recipes)
     # BBMASK += "recipes-mender/mender-client/mender-client_3.5.3.bb"
     # BBMASK += "recipes-mender/mender-client/mender-client_git.bb"
-
     # Force specific Mender version or provider
     # PREFERRED_VERSION_mender-client = "5.0.2"
     # PREFERRED_VERSION_mender = "5.0.2"
@@ -191,10 +200,6 @@ local_conf_header:
 
     # Kernel device tree configuration
     # KERNEL_DEVICETREE = "qemu.dtb"
-
-    # WIC image configuration
-    # WKS_FILE = "core-image-minimal.wks"
-    # IMAGE_FSTYPES += "wic"
 
     # Bootloader and kernel preferences
     # IMAGE_INSTALL:remove = "grub"
