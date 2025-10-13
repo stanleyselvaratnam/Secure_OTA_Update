@@ -1,4 +1,4 @@
-# core-image-minimal-qemuarm64.wks.in
+# custom-qemuarm64.wks.in
 # Partition table GPT pour QEMU ARM64 avec A/B kernel et rootfs
 
 bootloader --ptable gpt --append="rootwait rootfstype=ext4"

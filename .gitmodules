@@ -13,3 +13,7 @@
 	path = meta-custom
 	url = https://github.com/stanleyselvaratnam/meta-custom.git
 	branch = main
+[submodule "meta-raspberrypi"]
+	path = meta-raspberrypi
+	url = https://git.yoctoproject.org/git/meta-raspberrypi
+	branch = scarthgap

@@ -1,4 +1,4 @@
-# meta-my-layer/meta-wic/recipes-core/images/core-image-minimal.bbappend
+# meta-my-layer/meta-wic/recipes-core/images/core-image-base.bbappend
 
 IMAGE_FSTYPES += "wic wic.bz2 sdimg"
 

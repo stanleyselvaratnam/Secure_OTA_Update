@@ -20,6 +20,12 @@ repos:
       meta-oe:
       meta-networking:
       meta-python:
+
+  meta-community:
+    url: "https://github.com/mendersoftware/meta-mender-community.git"
+    refspec: "scarthgap"
+    layers:
+      meta-mender-update-modules:
   
   meta-mender:
     url: "https://github.com/mendersoftware/meta-mender.git"
@@ -35,7 +41,9 @@ repos:
   # meta-mender-kernel:
   #   url: "https://github.com/coreycothrum/meta-mender-kernel.git"
   #   refspec: "scarthgap"
-
+  meta-raspberry:
+    url: "https://git.yoctoproject.org/git/meta-raspberrypi"
+    refspec: "scarthgap"
 
   meta-custom:
     url: "https://github.com/stanleyselvaratnam/meta-custom.git"
@@ -49,7 +57,7 @@ repos:
     layers:
       meta-local:
       meta-myapps:
-      meta-wic:
+      # meta-wic:
       # meta-rollback:
       # meta-kernel-custom:
   
@@ -124,15 +132,15 @@ local_conf_header:
     # * ================================================================
 
     # ! WIC image configuration
-    WKS_FILE = "custom-qemuarm64.wks.in"
-    IMAGE_FSTYPES += "wic wic.bz2"
+    # WKS_FILE = "custom-qemuarm64.wks.in"
+    # IMAGE_FSTYPES += "wic wic.bz2"
 
     # * ================================================================
     # * Mender configuration (meta-mender-core)
     # * ================================================================
 
     # Name of the Mender artifact
-    MENDER_ARTIFACT_NAME = "rollback-1"
+    MENDER_ARTIFACT_NAME = "release-7"
 
     # Mender server URL and tenant token
     MENDER_SERVER_URL = "https://eu.hosted.mender.io"
@@ -158,7 +166,7 @@ local_conf_header:
     # --- MENDER SIGNING / VERIFY CONFIGURATION ---
 
     # Clé publique installée par mender-keys.bb
-    IMAGE_INSTALL:append = " mender-keys"
+    IMAGE_INSTALL:append = " mender-keys mender-keys-rotation"
 
     # Clé privée utilisée pour signer les artifacts (chemin absolu)
     MENDER_ARTIFACT_SIGNING_KEY = "${TOPDIR}/../mender-keys/private.key"
