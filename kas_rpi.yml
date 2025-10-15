@@ -21,7 +21,7 @@ repos:
       meta-networking:
       meta-python:
 
-  meta-community:
+  meta-mender-community:
     url: "https://github.com/mendersoftware/meta-mender-community.git"
     refspec: "scarthgap"
     layers:
@@ -115,8 +115,9 @@ local_conf_header:
     # Init system to use
     INIT_MANAGER = "systemd"
     
-    # # Kernel et DTB
-    # KERNEL_DEVICETREE = "qemu.dtb"
+    # ! Kernel et DTB
+    KERNEL_DEVICETREE = "broadcom/bcm2711-rpi-4-b.dtb"
+
 
     # UBOOT_CONFIGURE_ARGS:append = " --disable-efi"
 

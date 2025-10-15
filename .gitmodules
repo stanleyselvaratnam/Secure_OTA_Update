@@ -21,3 +21,7 @@
 	path = meta-mender-community
 	url = https://github.com/mendersoftware/meta-mender-community.git
 	branch = scarthgap
+[submodule "meta-lts-mixins-uboot"]
+	path = meta-lts-mixins-uboot
+	url = https://git.yoctoproject.org/meta-lts-mixins
+	branch = scarthgap/u-boot
