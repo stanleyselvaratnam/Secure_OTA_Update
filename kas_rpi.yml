@@ -42,6 +42,7 @@ repos:
   meta-lts-mixins:
     url: https://git.yoctoproject.org/meta-lts-mixins
     refspec: "scarthgap/u-boot"
+    path: "meta-lts-mixins"
 
 
   meta-custom:
@@ -56,6 +57,7 @@ repos:
     layers:
       meta-local:
       meta-myapps:
+      meta-connectivity:
       # meta-wic:
       # meta-rollback:
       # meta-kernel-custom:
@@ -64,8 +66,8 @@ repos:
 build_system: oe
 
 target:
-  - u-boot
-  - core-image-minimal
+  # - u-boot
+  - core-image-base
 
 machine: raspberrypi4-64
 
@@ -80,15 +82,21 @@ env:
 local_conf_header:
   my-config: |
 
-    # TODO : test the rollback, partition the kernel, double authentification
+    # TODO : test the rollback, partition the kernel, double authentification, boot firmware
     # * ================================================================
     # * Local configuration for building core-image-minimal with Mender
     # * ================================================================
 
     # Inherit the full Mender integration layer
     INHERIT += "mender-full"
+
     # This really saves a lot of disk space!
     INHERIT += "rm_work"
+
+    # Enable update of firmware files
+    # INHERIT += "rpi-update-firmware"
+    # ! NOTE! Updating these files is a non-reversible operation
+
     # * ================================================================
     # * Package management and image features
     # * ================================================================
@@ -107,10 +115,9 @@ local_conf_header:
     # * ================================================================
 
     # U-Boot bootloader files to include in image
-    # ! UBOOT_MACHINE = "qemu_arm64_defconfig"
     UBOOT_MACHINE = "raspberrypi4_64_defconfig"
 
-    IMAGE_BOOT_FILES = "u-boot.bin"
+    # IMAGE_BOOT_FILES = "u-boot.bin"
 
     # Init system to use
     INIT_MANAGER = "systemd"
@@ -121,8 +128,8 @@ local_conf_header:
 
     # UBOOT_CONFIGURE_ARGS:append = " --disable-efi"
 
-    # # Install files in /boot pour U-Boot
-    # IMAGE_INSTALL:append = " kernel-image kernel-devicetree"
+    # ! Install files in /boot pour U-Boot
+    IMAGE_INSTALL:append = " kernel-image kernel-devicetree"
 
     # # Disable EFI-related packages if any
     # # IMAGE_INSTALL:remove = "efi-utils"
@@ -131,7 +138,30 @@ local_conf_header:
     # * ENABLE UART
     # * ================================================================
 
+    RPI_USE_U_BOOT = "1"
     ENABLE_UART = "1"
+    RPI_EXTRA_CONFIG += "dtoverlay=disable-bt"
+    IMAGE_FSTYPES:remove = " rpi-sdimg"
+
+    # * ================================================================
+    # * ENABLE WIFI
+    # * ================================================================
+
+    # IMAGE_INSTALL:append = " wpa-supplicant iw"
+    # IMAGE_INSTALL:append = " firmware-brcm80211"
+
+    # RPI_KERNEL_MODULE_AUTOLOAD += "brcmfmac cfg80211"
+
+
+
+    # IMAGE_INSTALL:append = " brcmfmac-firmware networkmanager-autoconnect networkmanager"
+
+    # IMAGE_INSTALL:append = " kernel-module-brcmfmac kernel-module-cfg80211"
+
+    DISTRO_FEATURES:append = " wifi"
+
+    IMAGE_INSTALL:append = " linux-firmware-rpidistro-bcm43455 i2c-tools bridge-utils hostapd iptables dhcpcd wpa-supplicant-wifi iw"
+    LICENSE_FLAGS_ACCEPTED += "synaptics-killswitch"
 
     # * ================================================================
     # * Image types
@@ -160,18 +190,17 @@ local_conf_header:
     MENDER_TENANT_TOKEN = "AVi5j0YkJYNeYRamqwzY2r9WRz3sJo5nbGDGaE0uXtQ"
 
     # Device type
-    # ! MENDER_DEVICE_TYPE = "qemuarm64"
     MENDER_DEVICE_TYPE = "raspberrypi4-64"
 
     # Storage device and partition layout
     # ! MENDER_STORAGE_DEVICE = "/dev/vda"
     MENDER_STORAGE_DEVICE = "/dev/mmcblk0"
     MENDER_STORAGE_TOTAL_SIZE_MB = "4096"
-    MENDER_BOOT_PART_SIZE_MB = "16"
+    MENDER_BOOT_PART_SIZE_MB = "100"
     MENDER_DATA_PART_SIZE_MB = "128"
 
     # ! Enable automatic U-Boot configuration for partitions
-    MENDER_UBOOT_AUTO_CONFIGURE = "0"
+    MENDER_UBOOT_AUTO_CONFIGURE = "1"
 
     # Polling intervals (empty = default)
     MENDER_UPDATE_POLL_INTERVAL_SECONDS = ""
