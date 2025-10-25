@@ -1,3 +1,5 @@
+# ! KAS_BUILD_DIR=build-rpi4 kas build kas_rpi.yml
+
 header:
   version: 11
 
@@ -44,6 +46,17 @@ repos:
     refspec: "scarthgap/u-boot"
     path: "meta-lts-mixins"
 
+  meta-secure-core:
+    url: "https://github.com/Wind-River/meta-secure-core.git"
+    refspec: "scarthgap"
+    layers:
+      meta-encrypted-storage:
+      meta-tpm2:
+
+  # meta-clevis:
+  #   url: "https://github.com/ejaaskel/meta-clevis.git"
+  #   refspec: "main"
+
 
   meta-custom:
     url: "https://github.com/stanleyselvaratnam/meta-custom.git"
@@ -58,6 +71,7 @@ repos:
       meta-local:
       meta-myapps:
       meta-connectivity:
+      meta-crypto:
       # meta-wic:
       # meta-rollback:
       # meta-kernel-custom:
@@ -105,7 +119,7 @@ local_conf_header:
     PACKAGE_CLASSES ?= "package_ipk"
 
     # Packages to include in the image
-    IMAGE_INSTALL:append = " htop vim ca-certificates helloworld hellocustom"
+    IMAGE_INSTALL:append = " htop vim ca-certificates helloworld hellocustom lsof"
 
     # * ================================================================
     # * Bootloader configuration
@@ -182,11 +196,36 @@ local_conf_header:
     # IMAGE_FSTYPES += "wic wic.bz2"
 
     # * ================================================================
+    # * ENCRYPTION
+    # * ================================================================
+
+    # # Packages cryptographiques nécessaires
+    # IMAGE_INSTALL:append = " cryptsetup e2fsprogs util-linux"
+
+    # # Active le framework sécurité
+    # SECURECORE_ENABLE = "1"
+
+    # # Désactive le TPM (non présent sur ton RPi4)
+    # DISTRO_FEATURES:remove = "tpm tpm2"
+
+    # # Si TPM absent, activer mode passphrase-manuelle
+    # SECURECORE_STORAGE_ENCRYPTION_METHOD = "manual"
+
+    # # Cible la partition à sécuriser
+    # SECURECORE_LUKS_DEVICE = "/dev/mmcblk0p5"
+    # SECURECORE_LUKS_LABEL = "securedata"
+    # SECURECORE_LUKS_SIZE_MB = "256"
+
+    # # Définit le cryptsetup à utiliser
+    # SECURECORE_USE_LUKS2 = "1"
+
+
+    # * ================================================================
     # * Mender configuration (meta-mender-core)
     # * ================================================================
 
     # Name of the Mender artifact
-    MENDER_ARTIFACT_NAME = "release-2"
+    MENDER_ARTIFACT_NAME = "release-test"
 
     # Mender server URL and tenant token
     # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
@@ -226,6 +265,33 @@ local_conf_header:
     # IMAGE_INSTALL:append = " kernel-update-module"
 
     IMAGE_INSTALL:append = " mender-artifact-info"
+
+    # ! ================================================================
+    # ! ENCRYPTED PARTITION SETUP
+    # ! ================================================================
+    # Mender ne doit plus monter /data automatiquement au boot
+    MENDER_DATA_MOUNT_DISABLED = "1"
+
+    # (Optionnel) Redéfinis la partition /data sur p4
+    MENDER_DATA_PART = "${MENDER_STORAGE_DEVICE_BASE}4"
+    
+    # Enable GPT partitioning
+    MENDER_FEATURES_ENABLE:append = " mender-image-gpt"
+    
+    # Add secure data partition (unformatted)
+    MENDER_EXTRA_PARTS = "securepart"
+    MENDER_EXTRA_PARTS[securepart] = "--label=securedata --size=256"
+    
+    # Install LUKS tools and init script
+    IMAGE_INSTALL:append = " cryptsetup e2fsprogs util-linux lsof luks-init"
+    
+    # Enable systemd service
+    SYSTEMD_AUTO_ENABLE:pn-systemd = "enable"
+
+    # Si besoin d’options fstab automatiques
+    # MENDER_EXTRA_PARTS_FSTAB[securepart] = "auto defaults 0 2"
+
+
     # ! ================================================================
     # ! Test Rollback (meta-rollback)
     # ! ================================================================
