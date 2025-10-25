@@ -25,3 +25,6 @@
 	path = meta-lts-mixins-uboot
 	url = https://git.yoctoproject.org/meta-lts-mixins
 	branch = scarthgap/u-boot
+[submodule "layers/meta-secure-core"]
+	path = layers/meta-secure-core
+	url = https://github.com/Wind-River/meta-secure-core.git
