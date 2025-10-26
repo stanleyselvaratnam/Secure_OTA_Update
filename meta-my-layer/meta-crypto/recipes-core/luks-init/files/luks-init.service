@@ -1,7 +1,7 @@
 [Unit]
 Description=Initialize LUKS encrypted partition
-After=local-fs-pre.target
-Before=local-fs.target
+After=network.target syslog.target local-fs.target
+Wants=local-fs.target
 DefaultDependencies=no
 ConditionPathExists=/dev/mmcblk0p5
 
