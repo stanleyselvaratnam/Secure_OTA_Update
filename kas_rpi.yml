@@ -291,6 +291,8 @@ local_conf_header:
     # Si besoin d’options fstab automatiques
     # MENDER_EXTRA_PARTS_FSTAB[securepart] = "auto defaults 0 2"
 
+    # Pour créer les liens symboliques de la partition chiffrée au rootfs
+    IMAGE_INSTALL:append = " secure-symlinks"
 
     # ! ================================================================
     # ! Test Rollback (meta-rollback)
