@@ -1,6 +1,7 @@
 # Yocto/Kas build output
 build/
 build-rpi4/
+build-rpi4-encrypted/
 sstate-cache/
 downloads/
 tmp/
