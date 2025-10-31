@@ -20,20 +20,28 @@ repos:
       meta-oe:
       meta-networking:
       meta-python:
-  #     meta-multimedia:
-  #     meta-filesystems:
+      meta-multimedia:
+      meta-gnome:
+      meta-filesystems:
 
-  # meta-qt5:
-  #   url: "https://github.com/meta-qt5/meta-qt5.git"
-  #   refspec: "scarthgap"
+  meta-qt5:
+    url: "https://github.com/meta-qt5/meta-qt5.git"
+    refspec: "scarthgap"
   
-  # meta-security:
-  #   url: "git://git.yoctoproject.org/meta-security"
-  #   refspec: "scarthgap"
+  meta-qt5-extra:
+    url: "https://github.com/schnitzeltony/meta-qt5-extra.git"
+    refspec: "master"
 
-  # meta-freescale-distro:
-  #   url: "https://github.com/Freescale/meta-freescale-distro.git"
-  #   refspec: "scarthgap"
+
+  meta-security:
+    url: "git://git.yoctoproject.org/meta-security"
+    refspec: "scarthgap"
+    layers:
+      meta-tpm:
+
+  meta-freescale-distro:
+    url: "https://github.com/Freescale/meta-freescale-distro.git"
+    refspec: "scarthgap"
 
 
   meta-freescale:
@@ -56,9 +64,9 @@ repos:
     url: "https://git.toradex.com/meta-toradex-distro.git"
     refspec: "scarthgap-7.x.y"
 
-  # meta-toradex-demos:
-  #   url: "https://git.toradex.com/cgit/meta-toradex-demos.git/"
-  #   refspec: "scarthgap-7.x.y"
+  meta-toradex-demos:
+    url: "https://git.toradex.com/cgit/meta-toradex-demos.git/"
+    refspec: "scarthgap-7.x.y"
 
   # meta-toradex-security:
   #   url: "https://github.com/toradex/meta-toradex-security.git"
@@ -81,13 +89,13 @@ repos:
   # meta-my-layer:
   #   path: "meta-my-layer"
   #   layers:
-  #     meta-wic:
+  #     meta-mender-toradex-nxp:
 
 
 build_system: oe
 
 target:
-  - core-image-minimal
+  - tdx-reference-minimal-image
 
 machine: verdin-imx8mp
 
@@ -103,8 +111,11 @@ local_conf_header:
     PACKAGE_CLASSES ?= "package_ipk"
     INIT_MANAGER = "systemd"
     IMAGE_FSTYPES += "ext4"
-    EXTRA_IMAGE_FEATURES = "debug-tweaks ssh-server-openssh"
-    IMAGE_INSTALL:append = " openssh-sftp-server vim"
+    EXTRA_IMAGE_FEATURES = "debug-tweaks"
+    IMAGE_INSTALL:remove = "packagegroup-basic"
+    IMAGE_INSTALL:append = " packagegroup-core-ssh-openssh openssh-sftp-server vim"
+    DISTRO_FEATURES:remove = "ssh-server-dropbear"
+    IMAGE_INSTALL:remove = "dropbear"
     ACCEPT_FSL_EULA = "1"
 
     # Pas de Mender ici, kernel + dtb natifs pour imx8mp-evk QEMU
@@ -116,8 +127,9 @@ local_conf_header:
     # IMAGE_FSTYPES:remove = " teziimg"
 
     IMAGE_FSTYPES += "wic"
-    # WKS_FILE = "custom-imx8mp-layout.wks"
-    # WIC_CREATE_EXTRA_ARGS = "-e core-image-minimal -f ${WKS_FILE}"
+    # WKS_FILE = "imx-uboot.wks"
+    # UBOOT_BINARY = "u-boot-sd-2024.07-r0.bin"
+
 
     # * ================================================================
     # * Mender configuration (meta-mender-core)
@@ -128,10 +140,10 @@ local_conf_header:
     # Name of the Mender artifact
     MENDER_ARTIFACT_NAME = "release-test"
 
-    # Mender server URL and tenant token
-    # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
-    # MENDER_SERVER_URL = ""
-    # MENDER_TENANT_TOKEN = "AVi5j0YkJYNeYRamqwzY2r9WRz3sJo5nbGDGaE0uXtQ"
+    # # Mender server URL and tenant token
+    # # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
+    # # MENDER_SERVER_URL = ""
+    # # MENDER_TENANT_TOKEN = "AVi5j0YkJYNeYRamqwzY2r9WRz3sJo5nbGDGaE0uXtQ"
 
     # Device type
     MENDER_DEVICE_TYPE = "imx8mp-verdin"
@@ -141,9 +153,10 @@ local_conf_header:
     MENDER_STORAGE_TOTAL_SIZE_MB = "4096"
     MENDER_BOOT_PART_SIZE_MB = "100"
     MENDER_DATA_PART_SIZE_MB = "128"
-
-    # # ! Enable automatic U-Boot configuration for partitions
-    # MENDER_UBOOT_AUTO_CONFIGURE = "1"
+    MENDER_FEATURES_ENABLE:append = " mender-image-gpt mender-uboot"
+    MENDER_FEATURES_DISABLE:append = " mender-grub mender-image-uefi"
+    # ! Enable automatic U-Boot configuration for partitions
+    MENDER_UBOOT_AUTO_CONFIGURE = "1"
 
     # # Polling intervals (empty = default)
     # # MENDER_UPDATE_POLL_INTERVAL_SECONDS = ""
@@ -151,8 +164,8 @@ local_conf_header:
     # # MENDER_RETRY_POLL_INTERVAL_SECONDS = ""
 
    
-    # IMAGE_INSTALL:append = " mender-artifact-info"
-    IMAGE_BOOT_FILES:remove = "boot.scr"
+    IMAGE_INSTALL:append = " mender-artifact-info"
+    IMAGE_BOOT_FILES += "boot.scr-verdin-imx8mp"
 
     # UBOOT_CONFIG ??= "sd"
     # UBOOT_ENV ?= "u-boot-initial-env"
