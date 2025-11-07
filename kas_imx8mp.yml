@@ -96,9 +96,9 @@ repos:
     url: "git://git.toradex.com/meta-toradex-ti"
     refspec: "scarthgap-7.x.y"
 
-  meta-toradex-tezi:
-    url: "https://github.com/toradex/meta-toradex-tezi.git"
-    refspec: "scarthgap-7.x.y"
+  # meta-toradex-tezi:
+  #   url: "https://github.com/toradex/meta-toradex-tezi.git"
+  #   refspec: "scarthgap-7.x.y"
 
   meta-mender-community:
     url: "https://github.com/mendersoftware/meta-mender-community.git"
@@ -172,14 +172,14 @@ local_conf_header:
     MENDER_DEVICE_TYPE = "imx8mp-verdin"
 
     # Storage device and partition layout
-    MENDER_STORAGE_DEVICE = "/dev/mmcblk0"
+    MENDER_STORAGE_DEVICE = "/dev/mmcblk1"
     MENDER_STORAGE_TOTAL_SIZE_MB = "4096"
     MENDER_BOOT_PART_SIZE_MB = "100"
     MENDER_DATA_PART_SIZE_MB = "128"
     MENDER_FEATURES_ENABLE:append = " mender-image-gpt mender-uboot"
     MENDER_FEATURES_DISABLE:append = " mender-grub mender-image-uefi"
     # ! Enable automatic U-Boot configuration for partitions
-    # MENDER_UBOOT_AUTO_CONFIGURE = "1"
+    MENDER_UBOOT_AUTO_CONFIGURE = "1"
 
     # # Polling intervals (empty = default)
     # # MENDER_UPDATE_POLL_INTERVAL_SECONDS = ""
@@ -208,26 +208,26 @@ local_conf_header:
     # * ================================================================
     # * Toradex Easy Installer
     # * ================================================================
-    INHERIT += "toradex-mirrors"
-    BBMASK += "/meta-freescale/recipes-bsp/alsa-state"
+    # INHERIT += "toradex-mirrors"
+    # BBMASK += "/meta-freescale/recipes-bsp/alsa-state"
 
-    # Configurez explicitement le noyau préféré
-    PREFERRED_PROVIDER_virtual/kernel = "linux-toradex"
+    # # Configurez explicitement le noyau préféré
+    # PREFERRED_PROVIDER_virtual/kernel = "linux-toradex"
 
-    # UBOOT_MACHINE pour config u-boot
-    # UBOOT_MACHINE = "verdin-imx8mp"
-    UBOOT_CONFIG_BASENAME = "verdin-imx8mp"
-    # CORE_IMAGE_EXTRA_INSTALL += "firmware-imx"
+    # # UBOOT_MACHINE pour config u-boot
+    # # UBOOT_MACHINE = "verdin-imx8mp"
+    # UBOOT_CONFIG_BASENAME = "verdin-imx8mp"
+    # # CORE_IMAGE_EXTRA_INSTALL += "firmware-imx"
+
+    # # IMAGE_BOOT_FILES:remove = "boot.scr-${MACHINE};boot.scr"
+    # # IMAGE_BOOT_FILES:append = " boot.scr-${MACHINE}-1.1-r0;boot.scr"
 
     # IMAGE_BOOT_FILES:remove = "boot.scr-${MACHINE};boot.scr"
-    # IMAGE_BOOT_FILES:append = " boot.scr-${MACHINE}-1.1-r0;boot.scr"
+    # IMAGE_BOOT_FILES:append = " boot.scr"
 
-    IMAGE_BOOT_FILES:remove = "boot.scr-${MACHINE};boot.scr"
-    IMAGE_BOOT_FILES:append = " boot.scr"
+    # IMAGE_CLASSES += "image_type_tezi"
+    # # IMAGE_FSTYPES:append = " mender_tezi"
+    # IMAGE_FSTYPES:remove = " tezirunimg"
 
-    IMAGE_CLASSES += "image_type_tezi"
-    # IMAGE_FSTYPES:append = " mender_tezi"
-    IMAGE_FSTYPES:remove = " tezirunimg"
-
-    # IMAGE_CLASSES:remove = "image_type_tezi"
-    # IMAGE_FSTYPES:remove = "tezi teziimg"
+    # # IMAGE_CLASSES:remove = "image_type_tezi"
+    # # IMAGE_FSTYPES:remove = "tezi teziimg"
