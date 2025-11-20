@@ -33,9 +33,6 @@ repos:
     url: https://git.yoctoproject.org/meta-lts-mixins
     refspec: "scarthgap/u-boot"
     path: "meta-lts-mixins"
-  # meta-qt5-extra:
-  #   url: "https://github.com/schnitzeltony/meta-qt5-extra.git"
-  #   refspec: "master"
   
   meta-arm:
     url: "git://git.yoctoproject.org/meta-arm"
@@ -100,12 +97,6 @@ repos:
   #   url: "https://github.com/toradex/meta-toradex-tezi.git"
   #   refspec: "scarthgap-7.x.y"
 
-  meta-mender-community:
-    url: "https://github.com/TheYoctoJester/meta-mender-community.git"
-    refspec: "toradex-wip"
-    layers:
-      meta-mender-toradex-nxp:
-      # meta-mender-update-modules:
   
   meta-mender:
     url: "https://github.com/mendersoftware/meta-mender.git"
@@ -123,12 +114,12 @@ repos:
   meta-my-layer:
     path: "meta-my-layer"
     layers:
+      meta-mender-toradex-nxp:
       meta-wic:
       meta-local:
       meta-connectivity:
       meta-custom-u-boot:
-      # meta-mender-toradex-nxp:
-
+      meta-mender-imx:
 
 build_system: oe
 
@@ -144,7 +135,7 @@ env:
 
 local_conf_header:
   my-config: |
-    INHERIT += "rm_work"
+    # INHERIT += "rm_work"
     PACKAGE_CLASSES ?= "package_ipk"
     INIT_MANAGER = "systemd"
     IMAGE_FSTYPES += "ext4"
@@ -223,11 +214,34 @@ local_conf_header:
 
    
     IMAGE_INSTALL:append = " mender-artifact-info"
+
     # IMAGE_BOOT_FILES += "boot.scr-verdin-imx8mp"
 
     # UBOOT_CONFIG ??= "sd"
     # UBOOT_ENV ?= "u-boot-initial-env"
 
+    # * ================================================================
+    # * Specific SD chain U-Boot
+    # * ================================================================
+    
+    # IMAGE_INSTALL:append =  " fw-env-config"
+
+    # # Forcer l'environnement sur SD
+    # MENDER_UBOOT_STORAGE_DEVICE = "1"
+    # MENDER_UBOOT_ENV_STORAGE_DEVICE_OFFSET_1 = "0x800000"
+    # MENDER_UBOOT_ENV_STORAGE_DEVICE_OFFSET_2 = "0x1000000"
+
+
+    # * ================================================================
+    # * Custom U-Boot
+    # * ================================================================
+
+    # IMAGE_INSTALL:append = " u-boot-custom-script"
+
+    # IMAGE_BOOT_FILES:remove = " boot.scr"
+    IMAGE_BOOT_FILES:append = " boot-loader.scr"
+    IMAGE_BOOT_FILES:append = " u-boot-verdin-imx8mp.bin"
+    IMAGE_BOOT_FILES:append = " boot.scr-verdin-imx8mp;my_custom_boot.scr"
 
     # * ================================================================
     # * ENABLE SSH
@@ -287,13 +301,6 @@ local_conf_header:
 
     # # IMAGE_CLASSES:remove = "image_type_tezi"
     # # IMAGE_FSTYPES:remove = "tezi teziimg"
-
-    # * ================================================================
-    # * Custom U-Boot
-    # * ================================================================
-
-    # IMAGE_INSTALL:append = " u-boot-custom-script"
-
 
     # ? ================================================================
     # ? Build performance tuning
