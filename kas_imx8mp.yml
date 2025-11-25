@@ -120,6 +120,8 @@ repos:
       meta-connectivity:
       meta-custom-u-boot:
       meta-mender-imx:
+      meta-imx-firmware:
+      meta-crypto:
 
 build_system: oe
 
@@ -146,9 +148,6 @@ local_conf_header:
     IMAGE_INSTALL:remove = "dropbear"
     ACCEPT_FSL_EULA = "1"
 
-    # Pas de Mender ici, kernel + dtb natifs pour imx8mp-evk QEMU
-    # KERNEL_DEVICETREE = "freescale/imx8mp-verdin-nonwifi-dev.dtb freescale/imx8mp-verdin-wifi-dev.dtb"
-
     # * ================================================================
     # * Partition with WKS (meta-wic)
     # * ================================================================
@@ -170,7 +169,7 @@ local_conf_header:
     PREFERRED_PROVIDER_u-boot-fw-utils = "u-boot-fw-utils-mender"
 
     # Name of the Mender artifact
-    MENDER_ARTIFACT_NAME = "release-test"
+    MENDER_ARTIFACT_NAME = "release-1"
 
     # # Mender server URL and tenant token
     # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
@@ -215,16 +214,23 @@ local_conf_header:
    
     IMAGE_INSTALL:append = " mender-artifact-info"
 
+    # Intégration TLS
+    IMAGE_INSTALL:append = " mender-cert"
+    IMAGE_INSTALL:append = " wget"
+    # Add tcpdump to capture network traffic for TLS verification
+    IMAGE_INSTALL:append = " tcpdump"
+
+
+
+
     # IMAGE_BOOT_FILES += "boot.scr-verdin-imx8mp"
 
     # UBOOT_CONFIG ??= "sd"
     # UBOOT_ENV ?= "u-boot-initial-env"
 
     # * ================================================================
-    # * Specific SD chain U-Boot
+    # * Specific SD chain U-Boot environnement
     # * ================================================================
-    
-    # IMAGE_INSTALL:append =  " fw-env-config"
 
     # Forcer l'environnement sur SD
     BOOTENV_SIZE = "0x4000"
@@ -241,10 +247,22 @@ local_conf_header:
 
     # IMAGE_INSTALL:append = " u-boot-custom-script"
 
+    # Clean the boot partition with only the necessary files   
     # IMAGE_BOOT_FILES:remove = " boot.scr"
-    IMAGE_BOOT_FILES:append = " boot-loader.scr"
-    IMAGE_BOOT_FILES:append = " u-boot-verdin-imx8mp.bin"
-    IMAGE_BOOT_FILES:append = " boot.scr-verdin-imx8mp;my_custom_boot.scr"
+    IMAGE_BOOT_FILES:remove = "overlays overlays.txt overlays/*;overlays/"
+
+    IMAGE_BOOT_FILES = " \
+        boot-loader.scr \
+        boot.scr-verdin-imx8mp;my_custom_boot.scr \
+        u-boot-verdin-imx8mp.bin \
+    "
+    IMAGE_INSTALL:append = " device-tree-overlays-rootfs"
+
+    # Désactive le montage automatique de la partition boot dans /uboot
+    # MENDER_BOOT_PART = ""
+
+
+
 
     # * ================================================================
     # * ENABLE SSH
@@ -262,6 +280,34 @@ local_conf_header:
     # * ================================================================
     
     # IMAGE_INSTALL:append = " hosts"
+
+    # ! ================================================================
+    # ! ENCRYPTED PARTITION SETUP
+    # ! ================================================================
+    # Mender ne doit plus monter /data automatiquement au boot
+    MENDER_DATA_MOUNT_DISABLED = "1"
+
+    # (Optionnel) Redéfinis la partition /data sur p4
+    MENDER_DATA_PART = "${MENDER_STORAGE_DEVICE_BASE}4"
+    
+    # Enable GPT partitioning
+    MENDER_FEATURES_ENABLE:append = " mender-image-gpt"
+    
+    # Add secure data partition (unformatted)
+    MENDER_EXTRA_PARTS = "securepart"
+    MENDER_EXTRA_PARTS[securepart] = "--label=securedata --size=256"
+    
+    # Install LUKS tools and init script
+    IMAGE_INSTALL:append = " cryptsetup e2fsprogs util-linux lsof luks-init"
+    
+    # Enable systemd service
+    SYSTEMD_AUTO_ENABLE:pn-systemd = "enable"
+
+    # Si besoin d’options fstab automatiques
+    # MENDER_EXTRA_PARTS_FSTAB[securepart] = "auto defaults 0 2"
+
+    # Pour créer les liens symboliques de la partition chiffrée au rootfs
+    # IMAGE_INSTALL:append = " secure-symlinks"
 
     # * ================================================================
     # * Security
