@@ -1,7 +1,7 @@
 #!/bin/sh
-# LUKS initialization script for /dev/mmcblk0p5
+# LUKS initialization script for /dev/mmcblk1p5
 
-DEVICE="/dev/mmcblk0p5"
+DEVICE="/dev/mmcblk1p5"
 MAPPER_NAME="securedata"
 MOUNT_POINT="/mnt/securedata"
 KEY_FILE="/data/lukskey.bin"
