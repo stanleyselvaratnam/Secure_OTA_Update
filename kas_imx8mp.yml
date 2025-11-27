@@ -122,6 +122,7 @@ repos:
       meta-mender-imx:
       meta-imx-firmware:
       meta-crypto:
+      # meta-rollback:
 
 build_system: oe
 
@@ -137,7 +138,7 @@ env:
 
 local_conf_header:
   my-config: |
-    # INHERIT += "rm_work"
+    INHERIT += "rm_work"
     PACKAGE_CLASSES ?= "package_ipk"
     INIT_MANAGER = "systemd"
     IMAGE_FSTYPES += "ext4"
@@ -169,7 +170,7 @@ local_conf_header:
     PREFERRED_PROVIDER_u-boot-fw-utils = "u-boot-fw-utils-mender"
 
     # Name of the Mender artifact
-    MENDER_ARTIFACT_NAME = "release-1"
+    MENDER_ARTIFACT_NAME = "release-dev"
 
     # # Mender server URL and tenant token
     # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
@@ -193,7 +194,7 @@ local_conf_header:
     MENDER_STORAGE_DEVICE = "/dev/mmcblk1"
     MENDER_STORAGE_TOTAL_SIZE_MB = "4096"
     MENDER_BOOT_PART_SIZE_MB = "100"
-    MENDER_DATA_PART_SIZE_MB = "128"
+    MENDER_DATA_PART_SIZE_MB = "512"
     MENDER_FEATURES_ENABLE:append = " mender-image-gpt mender-uboot"
     MENDER_FEATURES_DISABLE:append = " mender-grub mender-image-uefi"
 
@@ -262,8 +263,6 @@ local_conf_header:
     # MENDER_BOOT_PART = ""
 
 
-
-
     # * ================================================================
     # * ENABLE SSH
     # * ================================================================
@@ -308,6 +307,13 @@ local_conf_header:
 
     # Pour créer les liens symboliques de la partition chiffrée au rootfs
     # IMAGE_INSTALL:append = " secure-symlinks"
+
+
+    # ! ================================================================
+    # ! Rollback
+    # ! ================================================================
+
+    # IMAGE_INSTALL:append = " remove-kernel-rootfs"
 
     # * ================================================================
     # * Security
