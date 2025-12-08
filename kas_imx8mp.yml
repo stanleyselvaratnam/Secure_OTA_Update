@@ -149,6 +149,9 @@ local_conf_header:
     IMAGE_INSTALL:remove = "dropbear"
     ACCEPT_FSL_EULA = "1"
 
+    INHERIT += "vex"
+
+    
     # * ================================================================
     # * Partition with WKS (meta-wic)
     # * ================================================================
@@ -325,7 +328,6 @@ local_conf_header:
     # INITRAMFS_IMAGE = "tdx-reference-ramdisk-image"
     # INITRAMFS_IMAGE_NAME = "tdx-reference-ramdisk-image-imx8mp-verdin"
     # KERNEL_IMAGE_NAME = "tdx-reference-ramdisk-image"
-
 
     # DISTRO_FEATURES:append = " security"
 
