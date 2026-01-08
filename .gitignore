@@ -12,7 +12,7 @@ tmp/
 cache/
 mender-keys/private.key
 mender-keys/private-rotation.key
-!meta-my-layer/
+
 
 # Bitbake/daemon artefacts
 bitbake.lock
