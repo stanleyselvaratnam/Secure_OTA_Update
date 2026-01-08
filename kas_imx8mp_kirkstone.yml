@@ -120,8 +120,8 @@ repos:
   #   layers:
   #     meta-key:
 
-  # meta-my-layer:
-  #   path: "meta-my-layer"
+  # meta-imx8mp-rega:
+  #   path: "meta-imx8mp-rega"
   #   layers:
   #     meta-wic:
   #     meta-local:
