@@ -187,7 +187,7 @@ local_conf_header:
     PREFERRED_PROVIDER_u-boot-fw-utils = "u-boot-fw-utils-mender"
 
     # Name of the Mender artifact
-    MENDER_ARTIFACT_NAME = "release-curl"
+    MENDER_ARTIFACT_NAME = "release-with-secure-boot"
 
     # # Mender server URL and tenant token
     # MENDER_SERVER_URL = "https://eu.hosted.mender.io"
@@ -312,7 +312,7 @@ local_conf_header:
     # Optional: Auto fstab options (commented)
     # MENDER_EXTRA_PARTS_FSTAB[securepart] = "auto defaults 0 2"
 
-    # Optional: Symlinks for  files in secure partition
+    # Optional: Symlinks to put files in secure partition
     # IMAGE_INSTALL:append = " secure-symlinks"
 
 
@@ -329,21 +329,21 @@ local_conf_header:
     # Enable VEX (Vendor Extension) support
     INHERIT += "vex"
 
-    IMAGE_FEATURES += "read-only-rootfs"
+    # IMAGE_FEATURES += "read-only-rootfs"
 
     # Enable encrypted rootfs and OP-TEE
     INHERIT += "tdx-encrypted tdx-optee"
 
-    # Use CAAM (Cryptographic Acceleration and Assurance Module) as secure key backend
-    TDX_ENC_KEY_BACKEND = "caam"
+    # Use CAAM (Cryptographic Acceleration and Assurance Module)
+    TDX_ENC_KEY_BACKEND:forcevariable = "caam"
     TDX_ENC_KEY_LOCATION = "filesystem"
     TDX_ENC_KEY_DIR = "/var/local/keys"
     TDX_ENC_KEY_FILE = "securedata-key.blob"
 
-    # Encrypted partition mapping (/dev/mmcblk1p5 -> /mnt/securedata)
+    # Encrypted partition mapping
     TDX_ENC_STORAGE_LOCATION = "/dev/mmcblk1p5"
     TDX_ENC_MAPPER_NAME = "securedata"
-    TDX_ENC_MOUNTPOINT = "/mnt/securedata" 
+    TDX_ENC_STORAGE_MOUNTPOINT = "/mnt/securedata" 
 
     # Force OP-TEE tests and fTPM (Firmware TPM)
     TDX_OPTEE_INSTALL_TESTS = "1"
@@ -354,13 +354,27 @@ local_conf_header:
     DISTRO_FEATURES:append = " security"
 
     # Commented: HAB/secure boot and initramfs options
-    # INHERIT += "tdxref-signed"
-    # TDX_IMX_HAB_ENABLE = "0"
-    # INITRAMFS_IMAGE = "tdx-reference-ramdisk-image"
-    # INITRAMFS_IMAGE_NAME = "tdx-reference-ramdisk-image-imx8mp-verdin"
-    # KERNEL_IMAGE_NAME = "tdx-reference-ramdisk-image"
+    INHERIT += "tdxref-signed"
+    TDX_IMX_HAB_ENABLE = "1"
+    TDX_IMX_HAB_CST_DIR = "${TOPDIR}/../IMX_CST_TOOL_NEW/cst-4.0.1"
 
-    
+    # U-Boot Hardening
+    TDX_UBOOT_HARDENING_ENABLE  = "1"
+    TDX_UBOOT_HARDENING_ENABLE_DBG = "1"
+
+    # Take the signed FIT Image (Kernel, DTB, initramfs)
+    KERNEL_IMAGETYPE = "fitImage"
+
+    # ! Doesn't work
+    # Configuring rootfs image signing
+    DM_VERITY_IMAGE = "tdx-reference-minimal-image"
+    # ARTIFACTIMG_FSTYPE = "ext4"
+    # IMAGE_ROOTFS_SIZE = "3145728"
+    # IMAGE_OVERHEAD_FACTOR = "1.0"
+    # IMAGE_ROOTFS_EXTRA_SPACE = "0"
+    # MENDER_DATA_PART_FSTYPE = "ext4"
+    INITRAMFS_IMAGE = "tdx-reference-ramdisk-image"
+    INITRAMFS_IMAGE_NAME = "tdx-reference-ramdisk-image-imx8mp-verdin"
 
     # * ================================================================
     # * Toradex Easy Installer
