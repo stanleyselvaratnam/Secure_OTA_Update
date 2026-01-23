@@ -133,6 +133,7 @@ repos:
       # meta-crypto:
       meta-example:
       # meta-rollback:
+      meta-custom-security:
 
 build_system: oe
 
@@ -329,7 +330,7 @@ local_conf_header:
     # Enable VEX (Vendor Extension) support
     INHERIT += "vex"
 
-    # IMAGE_FEATURES += "read-only-rootfs"
+    IMAGE_FEATURES += "read-only-rootfs"
 
     # Enable encrypted rootfs and OP-TEE
     INHERIT += "tdx-encrypted tdx-optee"
@@ -337,13 +338,13 @@ local_conf_header:
     # Use CAAM (Cryptographic Acceleration and Assurance Module)
     TDX_ENC_KEY_BACKEND:forcevariable = "caam"
     TDX_ENC_KEY_LOCATION = "filesystem"
-    TDX_ENC_KEY_DIR = "/var/local/keys"
+    TDX_ENC_KEY_DIR = "/data/caam"
     TDX_ENC_KEY_FILE = "securedata-key.blob"
 
     # Encrypted partition mapping
     TDX_ENC_STORAGE_LOCATION = "/dev/mmcblk1p5"
     TDX_ENC_MAPPER_NAME = "securedata"
-    TDX_ENC_STORAGE_MOUNTPOINT = "/mnt/securedata" 
+    TDX_ENC_STORAGE_MOUNTPOINT = "/securedata" 
 
     # Force OP-TEE tests and fTPM (Firmware TPM)
     TDX_OPTEE_INSTALL_TESTS = "1"
@@ -354,13 +355,13 @@ local_conf_header:
     DISTRO_FEATURES:append = " security"
 
     # HAB/secure boot enable
-    INHERIT += "tdxref-signed"
+    INHERIT += "tdx-signed"
     TDX_IMX_HAB_ENABLE = "1"
     TDX_IMX_HAB_CST_DIR = "${TOPDIR}/../IMX_CST_TOOL_NEW/cst-4.0.1"
     TDX_IMX_HAB_CST_CRYPTO = "rsa"
     TDX_IMX_HAB_CST_KEY_SIZE = "2048"
     TDX_IMX_HAB_CST_DIG_ALGO = "sha256"
-    TDX_IMX_HAB_CST_SRK_INDEX "1"
+    TDX_IMX_HAB_CST_SRK_INDEX = "1"
 
 
     # U-Boot Hardening
@@ -372,14 +373,21 @@ local_conf_header:
 
     # ! Doesn't work
     # Configuring rootfs image signing
-    DM_VERITY_IMAGE = "tdx-reference-minimal-image"
-    # ARTIFACTIMG_FSTYPE = "ext4"
-    # IMAGE_ROOTFS_SIZE = "3145728"
-    # IMAGE_OVERHEAD_FACTOR = "1.0"
-    # IMAGE_ROOTFS_EXTRA_SPACE = "0"
-    # MENDER_DATA_PART_FSTYPE = "ext4"
-    INITRAMFS_IMAGE = "tdx-reference-ramdisk-image"
-    INITRAMFS_IMAGE_NAME = "tdx-reference-ramdisk-image-imx8mp-verdin"
+    # DM_VERITY_IMAGE = "tdx-reference-minimal-image"
+    # # ARTIFACTIMG_FSTYPE = "ext4"
+    # # IMAGE_ROOTFS_SIZE = "3145728"
+    # # IMAGE_OVERHEAD_FACTOR = "1.0"
+    # # IMAGE_ROOTFS_EXTRA_SPACE = "0"
+    # # MENDER_DATA_PART_FSTYPE = "ext4"
+    # INITRAMFS_IMAGE = "tdx-reference-ramdisk-image"
+    # INITRAMFS_IMAGE_NAME = "tdx-reference-ramdisk-image-imx8mp-verdin"
+    # INITRAMFS_IMAGE_BUNDLE = "1"
+    # INITRAMFS_KERNEL_IMAGE = "fitImage-${MACHINE}.bin"
+
+    # IMAGE_BOOT_FILES:append = " ${INITRAMFS_KERNEL_IMAGE};fitImage"
+    # do_image_bootimg[depends] += "virtual/kernel:do_deploy"
+
+    # # IMAGE_ROOTFS_EXTRA_SPACE = "65536"
 
     # * ================================================================
     # * Toradex Easy Installer
