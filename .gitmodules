@@ -60,22 +60,22 @@
 
 [submodule "meta-toradex-bsp-common"]
     path = meta-toradex-bsp-common
-    url = https://github.com/toradex/meta-toradex-bsp-common.git
+    url = https://git.toradex.com/meta-toradex-bsp-common.git
     branch = scarthgap-7.x.y
 
 [submodule "meta-toradex-nxp"]
     path = meta-toradex-nxp
-    url = https://github.com/toradex/meta-toradex-nxp.git
+    url = https://git.toradex.com/meta-toradex-nxp.git
     branch = scarthgap-7.x.y
 
 [submodule "meta-toradex-distro"]
     path = meta-toradex-distro
-    url = https://github.com/toradex/meta-toradex-distro.git
+    url = https://git.toradex.com/meta-toradex-distro.git
     branch = scarthgap-7.x.y
 
 [submodule "meta-toradex-demos"]
     path = meta-toradex-demos
-    url = https://github.com/toradex/meta-toradex-demos.git
+    url = https://git.toradex.com/meta-toradex-demos.git
     branch = scarthgap-7.x.y
 
 [submodule "meta-toradex-security"]
@@ -90,7 +90,7 @@
 
 [submodule "meta-toradex-ti"]
     path = meta-toradex-ti
-    url = http://git.toradex.com/meta-toradex-ti.git
+    url = https://git.toradex.com/meta-toradex-ti.git
     branch = scarthgap-7.x.y
 
 [submodule "meta-lts-mixins"]
