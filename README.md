@@ -120,10 +120,11 @@ KAS_BUILD_DIR=build-imx8mp kas build kas_imx8mp.yml
 
 The project implements a high-security standard for embedded systems:
 
-* **OTA Updates:** Integrated Mender with **A/B partition-based rollback**.
-* **Secure Boot:** Hardware-rooted trust using NXP HAB4 (High Assurance Boot).
-* **Data Encryption:** External partition encryption managed via **CAAM** (Cryptographic Acceleration and Assurance Module) for hardware-accelerated security.
-* **Integrity:** All Mender artifacts are digitally signed to ensure image authenticity.
+* [x] **OTA Updates:** Integrated Mender with **A/B partition-based rollback**.
+* [x] **Secure Boot:** Hardware-rooted trust using NXP HAB4 (High Assurance Boot).
+  * [ ] dm-verity (Verified rootfs for file system integrity) — 🔗 *[Implementation available on `dm-verity` branch](https://github.com/stanleyselvaratnam/Secure_OTA_Update_System_for_Embedded_Drones/tree/dm-verity#)*
+* [x] **Data Encryption:** External partition encryption managed via **CAAM** (Cryptographic Acceleration and Assurance Module) for hardware-accelerated security.
+* [x] **Integrity:** All Mender artifacts are digitally signed to ensure image authenticity.
 ---
 
 ## Yocto Layers and Commit References
